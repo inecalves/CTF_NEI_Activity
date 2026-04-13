@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <title>CTF Workshop - 12º Ano</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="container">
+        <h1>Workshop Cybersecurity: CTF Edition</h1>
+        <p>Missão: Encontra as 5 flags escondidas no sistema.</p>
+        
+        <hr>
+
+        <section>
+            <h2>Nível Fácil</h2>
+            <p>1. Existe uma flag comentada no código desta página.</p>
+            <p>2. Existe uma flag escondida num ficheiro externo (.css) que o site carrega. </p>
+        </section>
+
+        <!-- SUCESSO: FLAG_1 {F12_INSPECTION} --> 
+
+        <hr>
+
+        <section>
+            <h2>Nível Médio</h2>
+            <p>3. <strong>HTTP Header:</strong> Inspeciona o tráfego de rede (Network) para encontrar a flag enviada pelo "servidor".</p>
+            <p>4. <strong>Cookies:</strong> Altera o valor de 'admin' para 'true' para libertar a flag.</p>
+            
+            <button onclick="checkAdmin()">Verificar Status de Admin</button>
+            <div id="cookieFlag" class="hidden" style="margin-top:10px; color: yellow;">
+                SUCESSO: FLAG_4 {COOKIE_MANIPULATION_PRO}
+            </div>
+        </section>
+
+        <hr>
+
+        <section>
+            <h2>Nível Difícil</h2>
+            <p>5. <strong>SQL Injection:</strong> Faz bypass ao login para entrar como administrador.</p>
+            <input type="text" id="user" placeholder="Username">
+            <input type="password" id="pass" placeholder="Password">
+            <button onclick="login()">Entrar</button>
+            <p id="sqlMessage"></p>
+        </section>
+    </div>
+
+    <script>
+        document.cookie = "admin=false; path=/";
+
+        fetch('https://jsonplaceholder.typicode.com/todos/1', {
+            headers: {
+                'X-Custom-Flag': 'SUCESSO: FLAG_3 {NETWORK_HEADER_SCOUT}'
+            }
+        });
+
+        function checkAdmin() {
+            if (document.cookie.includes("admin=true")) {
+                document.getElementById('cookieFlag').classList.remove('hidden');
+            } else {
+                alert("Acesso negado: Apenas para utilizadores com cookie admin=true");
+            }
+        }
+
+        function login() {
+            const u = document.getElementById('user').value;
+            const p = document.getElementById('pass').value;
+
+            if (u.includes("' OR '1'='1'") || p.includes("' OR '1'='1'")) {
+                document.getElementById('sqlMessage').innerHTML = 
+                    "<br><b>SUCESSO: FLAG_5 {SQL_INJECTION}</b>";
+            } else {
+                document.getElementById('sqlMessage').innerText = "Utilizador ou senha inválidos.";
+            }
+        }
+    </script>
+</body>
+</html>
